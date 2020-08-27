@@ -1,0 +1,180 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+
+
+
+```{r load-data}
+load("brfss2013.RData")
+```
+
+
+
+* * *
+
+## Part 1: Data
+ 
+The Behavioral Risk Factor Surveillance System or simply the BRFSS used stratified sampling for sample to be random but the participants were not put in control regarding the exercises to be performed, alcohol consumption, amount of sleep to be taken etc.Therefore, this is an observational study and is generalizable. 
+
+As per the CDC website, survey is done using landline or cellular telephone to monitor trends in public health but as the surveillance is only observational.Hence, no causal inference can be made.
+
+* * *
+
+## Part 2: Research questions
+
+**Research question 1:**For the general population in the US, is there a correlation between the amount of sleep and chronic health condition such as diabetes? Specifically for those category of people who sleep for less than 6 hours.
+
+
+Interest factor: As someone who often sacrifices sleep in order to meet the time requirements and have a family history of diabetes, I am interested to see how survey participants reported number of hours of sleep correlates to chronic health condition such as diabetes.
+
+**Research question 2:**For the general population in the US, is there any correlation between a level of education obtained and income level? Further, are there any noticeable differences in this correlation between genders.
+
+Interest factor: Are there any noticeable trends in income level for those that push hard to achieve high levels of formal education? As a strong proponent of self advancement through education, I am interested to see if there is any noticeable trends between those who complete more education and have high income level.
+
+**Research question 3:**Is there any correlation between general health and smoking frequency? Further, are there any noticeable differences in this correlation between genders.
+
+Interest factor: Are there any noticeable trends in general health for those who smoke? One would think smoking would damage general health.Therefore, I am interested to see the correlation between frequency of smoking and its effect on general health. 
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+
+**Research question 1:** 
+```{r}
+# Query the relevant variables
+# sleptim1: How Much Time Do You Sleep
+# diabete3: (Ever Told) You Have Diabetes
+
+q1 <- brfss2013 %>%
+  filter(!is.na(sleptim1),!is.na(diabete3),diabete3 != 'Yes, but female told only during pregnancy',        
+  diabete3 != 'No, pre-diabetes or borderline diabetes') %>%
+  select(sleptim1,diabete3)
+q11<- q1 %>%
+  filter(sleptim1<6) %>%
+  group_by(diabete3) %>%
+  summarise(count=n())
+
+#display
+
+q11
+
+```
+```{r}
+# Plot relevant variables
+# Use bar plot to observe relationship between amount of sleep and chronic health condition such as diabetes.
+
+ggplot(data=q11,aes(x=diabete3,y=count))+geom_bar(stat = "identity")+
+xlab("Diabetes to people having <6 hours of sleep")+ylab("Number of US citizens ")
+
+```
+
+*Survey results indicate that sleeping less than 6 hours does not cause diabetes.Provided            the person has an healthy lifestyle.Therefore we cannot form a correlation between person            who sleeps less than6 hours and diabetes.  *                
+
+**Research question 2:**
+
+```{r}
+# Query the relevant variables
+# income2 : Income level
+# educa: Education Level
+# sex: Respondents Sex
+
+q2 <- select(brfss2013, income2 , sex, educa) %>% 
+  filter(!is.na(income2), !is.na(sex), !is.na(educa))
+q2 %>% 
+  group_by(income2) %>%    
+  summarise(count=n())
+```
+```{r}
+q2 %>% 
+  group_by(educa) %>%  
+  summarise(count=n())
+```
+```{r}
+q2 %>% 
+  group_by(sex) %>%  
+  summarise(count=n())
+```
+```{r}
+# Plot relevant variables
+# Use count plot to observe relationship between two categorical variables.
+# Facet by gender to observe differences between the sexes.
+
+
+ggplot(data = q2, aes(x = income2 , y = educa ))+
+     geom_count () +
+   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+   facet_grid(. ~  sex) +
+     xlab("income2: Income Level") +
+     ylab ("educa: Education Level")
+
+```
+
+*Both genders are behaving similarly in the observation that income levels are greatest               for those that have at least completed high school or the equivalent.  Further, most          respondents in this survey have completed at least high school, which may indicate                there is some sort of systematic bias in the survey.*
+
+**Research question 3:**
+
+```{r}
+# Query the relevant variables
+# genhlth: General Health
+# smokday2: Frequency Of Days Now Smoking
+# sex: Respondents Sex
+  
+q3 <- select(brfss2013, genhlth ,smokday2, sex) %>% 
+  filter(!is.na(genhlth), !is.na(smokday2) , !is.na(sex))
+
+# Present totals of variables being analyzed
+
+q3 %>% 
+  group_by(genhlth) %>%    
+  summarise(count=n())
+```
+```{r}
+q3 %>% 
+  group_by(smokday2) %>%  
+  summarise(count=n())
+```
+```{r}
+q3 %>% 
+  group_by(sex) %>%  
+  summarise(count=n())
+
+
+```
+```{r}
+# Plot relevant variables
+# Use count plot to observe relationship between two categorical variables. 
+# Facet by gender to observe differences between the sexes.
+
+ggplot(data = q3, aes(x = genhlth , y = smokday2))+ 
+   geom_count () +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  facet_grid(. ~  sex) +
+    xlab("genhlth: General Health ") +
+    ylab ("smokday2:Frequency of smoking")
+   
+
+      
+```
+
+*Both genders are behaving similarly in the observation therefore no inference can be               made based upon gender but looking at the effect on general health by the frequency of           smoking, we can say that people who don't smoke are generally  at good health.We would             have assumed that a person who smokes everyday might have a very bad health but looking              at the data we see that a person who is a non frequent smoker has more bad health than               an everyday smoker.Since, the data is purely observational we can't make any inference              as certain factors might be missing.*
+
+
+
