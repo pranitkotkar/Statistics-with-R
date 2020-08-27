@@ -1,0 +1,2 @@
+link for brfss.Rdata:
+https://d3c33hcgiwev3.cloudfront.net/4tiY2fqCQa-YmNn6gnGvzQ_1e7320c30a6f4b27894a54e2de50a805_brfss2013.RData?Expires=1598659200&Signature=FAlNq~F-Bqald-5kW75ZvswY3TY3HQkZDsXRS8YCCOEVG0XkyfUxX7z0DLJHHBEXcLFre9bQvGmcBnVa7~juyAJIkagct~Yxsbu6HzfMS2h5bQukF~M9B00WMfH9PSSL8zlmth9HtqB3tL3vz-fPvt75Lp2GoHPQACgohZ5cno0_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A
